@@ -67,6 +67,30 @@ function VerboseReporter(logger, config) {
     }
   }
 
+  function collate(suite) {
+    if (suite.results) {
+      var output = {
+        total: 0,
+        successes: 0,
+        failures: 0,
+        skipped: 0
+      };
+
+      var results = Object.keys(suite.results);
+      for (var i in results) {
+        var result = suite.results[results[i]];
+        output.total += result.total;
+        output.successes += result.successes;
+        output.failures += result.failures;
+        output.skipped += result.skipped;
+      }
+
+      return output;
+    }
+
+    return null;
+  }
+
   function report(tests, indent) {
     if (! tests) return;
     indent = indent || '';
@@ -82,8 +106,16 @@ function VerboseReporter(logger, config) {
     if (tests.suites) {
       var suites = Object.keys(tests.suites);
       for (var i in suites) {
-        print(indent, '-', suites[i].bold, ':');
-        report(tests.suites[suites[i]], '  ' + indent);
+        var suite = tests.suites[suites[i]];
+        var collation = collate(suite);
+
+        if (collation.failures === 0) {
+          print(indent, '-', suites[i].bold, ':', message(collation));
+        }
+        else {
+          print(indent, '-', suites[i].bold, ':');
+          report(suite, '  ' + indent);
+        }
       }
     }
 
