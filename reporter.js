@@ -109,7 +109,7 @@ function VerboseReporter(logger, config) {
         var suite = tests.suites[suites[i]];
         var collation = collate(suite);
 
-        if (collation.failures === 0) {
+        if (collation && collation.failures === 0) {
           print(indent, '-', suites[i].bold, ':', message(collation));
         }
         else {
